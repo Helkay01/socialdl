@@ -1,0 +1,5 @@
+yt-dlp==2025.08.13
+ffmpeg-python==0.2.0       # Interface for ffmpeg in Python
+mutagen==1.47.0            # For editing audio metadata
+requests==2.31.0           # For making HTTP requests (if needed)
+colorama==0.4.6            # For colored terminal output
