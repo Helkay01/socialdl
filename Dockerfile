@@ -20,8 +20,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Confirm Python and pip versions
 RUN python3 --version && pip3 --version
 
-# Upgrade pip
-RUN python3 -m pip install --upgrade pip
 
 # Install yt-dlp
 RUN python3 -m pip install yt-dlp --no-cache-dir
