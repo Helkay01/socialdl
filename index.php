@@ -17,13 +17,11 @@ $videoUrl = $_GET['url'];
 
 $yt = new YoutubeDl();
 
-// Use setOptionArray instead of addOption
-$options = Options::create()
-    ->setOptionArray([
-        'skip-download' => true,   // do not save file
-        'dump-json'     => true    // return full JSON metadata
-    ])
-    ->setUrl($videoUrl);
+// Create options object
+$options = Options::create();
+$options->setUrl($videoUrl);
+$options->setOption('skip-download', true); // do not save file
+$options->setOption('dump-json', true);     // return full JSON metadata
 
 $collection = $yt->download($options);
 
@@ -67,7 +65,7 @@ foreach ($collection->getVideos() as $video) {
         }
     }
 
-    // Fallback to top-level URL if no combined stream found
+    // Fallback if no combined stream found
     if (!$bestUrl && isset($info['url'])) {
         $bestUrl = $info['url'];
     }
