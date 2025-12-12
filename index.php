@@ -17,15 +17,15 @@ $videoUrl = $_GET['url'];
 
 $yt = new YoutubeDl();
 
-// Optional: specify the path if yt-dlp isn't in PATH
-// $yt->setBinPath('/usr/local/bin/yt-dlp');
+// Use setOptionArray instead of addOption
+$options = Options::create()
+    ->setOptionArray([
+        'skip-download' => true,   // do not save file
+        'dump-json'     => true    // return full JSON metadata
+    ])
+    ->setUrl($videoUrl);
 
-$collection = $yt->download(
-    Options::create()
-        ->url($videoUrl)
-        ->skipDownload(true)      // do not save the file
-        ->addOption('dump-json')  // return full metadata
-);
+$collection = $yt->download($options);
 
 foreach ($collection->getVideos() as $video) {
     if ($video->getError()) {
@@ -58,7 +58,6 @@ foreach ($collection->getVideos() as $video) {
         $hasAudio = ($f['acodec'] ?? 'none') !== 'none';
         $hasVideo = ($f['vcodec'] ?? 'none') !== 'none';
 
-        // Combined (progressive) = both audio and video together
         if ($hasAudio && $hasVideo) {
             $height = $f['height'] ?? 0;
             if ($height > $bestHeight) {
@@ -68,12 +67,11 @@ foreach ($collection->getVideos() as $video) {
         }
     }
 
-    // If no combined stream found, fallback to best overall
+    // Fallback to top-level URL if no combined stream found
     if (!$bestUrl && isset($info['url'])) {
         $bestUrl = $info['url'];
     }
 
-    // Return JSON result
     header('Content-Type: application/json');
     echo json_encode([
         "title" => $title,
@@ -83,4 +81,3 @@ foreach ($collection->getVideos() as $video) {
 
     exit;
 }
-
