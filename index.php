@@ -2,29 +2,35 @@
 
 declare(strict_types=1);
 
-require __DIR__ . '/vendor/autoload.php';
-
-use YoutubeDl\Options;
-use YoutubeDl\YoutubeDl;
-
-$yt = new YoutubeDl();
+// URL of the YouTube video
 $videoUrl = 'https://www.youtube.com/watch?v=oDAw7vW7H0c';
 
-try {
-    $options = Options::create()
-        ->skipDownload(true); // Skip downloading the video
+// Path to yt-dlp binary
+$ytDlpPath = '/usr/local/bin/yt-dlp'; // adjust this to your yt-dlp path
 
-    $collection = $yt->getDownloadInfo($videoUrl, $options);
+// Command to get JSON info about the video
+$cmd = escapeshellcmd("$ytDlpPath -j $videoUrl");
 
-    foreach ($collection->getVideos() as $video) {
-        if ($video->getError()) {
-            echo "Error retrieving video info: {$video->getError()}\n";
-        } else {
-            echo "Title: " . $video->getTitle() . "\n";
-            echo "URL: " . $video->getUrl() . "\n";
-            echo "Thumbnail: " . $video->getThumbnail() . "\n";
-        }
-    }
-} catch (\YoutubeDl\Exception\YoutubeDlException $e) {
-    echo "Failed to retrieve video info: " . $e->getMessage();
+// Execute the command and capture output
+$output = shell_exec($cmd);
+
+if ($output === null) {
+    die("Failed to execute yt-dlp.\n");
 }
+
+// Decode JSON output
+$data = json_decode($output, true);
+
+if (json_last_error() !== JSON_ERROR_NONE) {
+    die("Failed to parse JSON: " . json_last_error_msg() . "\n");
+}
+
+// Extract needed information
+$title = $data['title'] ?? 'N/A';
+$thumbnail = $data['thumbnail'] ?? 'N/A';
+$webpageUrl = $data['webpage_url'] ?? $videoUrl;
+
+// Output
+echo "Title: $title\n";
+echo "URL: $webpageUrl\n";
+echo "Thumbnail: $thumbnail\n";
