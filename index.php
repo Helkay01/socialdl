@@ -12,7 +12,7 @@ $yt = new YoutubeDl();
 // Set options to skip actual download
 $collection = $yt->download(
     Options::create()
-        ->url('https://m.youtube.com/watch?v=h3r4aUYo6cA&pp=0gcJCSkKAYcqIYzv')
+        ->url('https://m.youtube.com/watch?v=h3r4aUYo6cA')
         ->skipDownload(true)
         ->downloadPath(sys_get_temp_dir())
 );
