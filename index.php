@@ -1,6 +1,6 @@
 <?php
 
-$url = $_POST['url'] ?? null;
+$url = "https://m.youtube.com/watch?v=h3r4aUYo6cA" ?? null;
 if (!$url) {
     http_response_code(400);
     exit("URL required");
