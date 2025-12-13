@@ -9,14 +9,14 @@ use YoutubeDl\YoutubeDl;
 
 $yt = new YoutubeDl();
 
-// The YouTube URL you want to fetch info for
+// The YouTube URL to fetch info for
 $videoUrl = 'https://www.youtube.com/watch?v=oDAw7vW7H0c';
 
 try {
     // Create options
     $options = Options::create()
-        ->skipDownload(true)                   // Don't download video
-        ->addOption('--cookies-from-browser', 'chrome'); // Use Chrome browser cookies
+        ->skipDownload(true)                  // Don't download video
+        ->setOption('cookies-from-browser', 'chrome'); // Use browser cookies
 
     // Fetch video info
     $collection = $yt->getDownloadInfo($videoUrl, $options);
