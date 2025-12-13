@@ -29,7 +29,7 @@ RUN pip3 install --no-cache-dir yt-dlp
 WORKDIR /var/www/html
 
 COPY extract.py /var/www/html/extract.py
-COPY extract.php /var/www/html/index.php
+COPY index.php /var/www/html/index.php
 
 # -----------------------------------------------------
 # Permissions (IMPORTANT)
