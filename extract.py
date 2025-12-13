@@ -1,40 +1,51 @@
-#!/usr/bin/env python3
-import sys
+from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
-import yt_dlp
+from yt_dlp import YoutubeDL
 
-url = sys.argv[1]
+class YTDLPHandler(BaseHTTPRequestHandler):
 
-ydl_opts = {
-    "quiet": True,
-    "skip_download": True,
-    "format": "bestvideo+bestaudio/best",
-}
+    def do_POST(self):
+        if self.path != "/yt":
+            self.send_response(404)
+            self.end_headers()
+            return
 
-with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-    info = ydl.extract_info(url, download=False)
+        length = int(self.headers.get("Content-Length", 0))
+        body = self.rfile.read(length)
 
-    result = {
-        "id": info.get("id"),
-        "title": info.get("title"),
-        "duration": info.get("duration"),
-        "uploader": info.get("uploader"),
-        "view_count": info.get("view_count"),
-        "thumbnail": info.get("thumbnail"),
-        "formats": []
-    }
+        try:
+            data = json.loads(body)
+            url = data.get("url")
+        except:
+            url = None
 
-    for f in info.get("formats", []):
-        if f.get("url"):
-            result["formats"].append({
-                "format_id": f.get("format_id"),
-                "ext": f.get("ext"),
-                "resolution": f.get("resolution"),
-                "fps": f.get("fps"),
-                "vcodec": f.get("vcodec"),
-                "acodec": f.get("acodec"),
-                "filesize": f.get("filesize"),
-                "url": f.get("url")
-            })
+        if not url:
+            self._send_json(400, {"error": "Missing URL"})
+            return
 
-    print(json.dumps(result, ensure_ascii=False))
+        try:
+            ydl_opts = {"quiet": True, "skip_download": True, "format": "best"}
+            with YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(url, download=False)
+                result = {
+                    "title": info.get("title"),
+                    "thumbnail": info.get("thumbnail"),
+                    "video_url": info.get("url")
+                }
+
+            self._send_json(200, result)
+
+        except Exception as e:
+            self._send_json(500, {"error": str(e)})
+
+    def _send_json(self, status_code, data):
+        payload = json.dumps(data).encode()
+        self.send_response(status_code)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(payload)))
+        self.end_headers()
+        self.wfile.write(payload)
+
+
+if __name__ == "__main__":
+    HTTPServer(("0.0.0.0", 10000), YTDLPHandler).serve_forever()
