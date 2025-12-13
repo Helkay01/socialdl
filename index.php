@@ -29,7 +29,7 @@ if ($response === false) {
 
 curl_close($ch);
 
-header("Content-Type: application/json");
+// header("Content-Type: application/json");
 echo $response;
 
 }
