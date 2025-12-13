@@ -1,22 +1,53 @@
 <?php
 
-header("Content-Type: application/json");
-
-if (!isset($_GET['url'])) {
+if(isset($_POST['btn'])) {
+    
+$url = $_POST['url'] ?? null;
+if (!$url) {
     http_response_code(400);
-    echo json_encode(["error" => "Missing url"]);
-    exit;
+    exit("URL required");
 }
 
-$url = escapeshellarg($_GET['url']);
+$payload = json_encode(["url" => $url]);
 
-$cmd = "python3 " . __DIR__ . "/extract.py $url";
-$output = shell_exec($cmd);
+$ch = curl_init("https://socialdl-u0bq.onrender.com/yt");
 
-if (!$output) {
-    http_response_code(500);
-    echo json_encode(["error" => "Extraction failed"]);
-    exit;
+curl_setopt_array($ch, [
+    CURLOPT_POST => true,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_HTTPHEADER => ["Content-Type: application/json"],
+    CURLOPT_POSTFIELDS => $payload,
+    CURLOPT_TIMEOUT => 20
+]);
+
+$response = curl_exec($ch);
+
+if ($response === false) {
+    http_response_code(502);
+    exit("Python service unreachable");
 }
 
-echo $output;
+curl_close($ch);
+
+header("Content-Type: application/json");
+echo $response;
+
+}
+
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    
+</head>  
+
+<body>
+    
+<form method="POST">
+    <input type="text" name="url" placeholder="Enter video URL" />
+    <button name="btn" type="submit">Get Video Info</button>
+</form>
+
+</body>
+</html>
