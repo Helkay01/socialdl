@@ -7,7 +7,7 @@ if (!$url) {
 }
 
 // Replace with your Python service URL on Render
-$python_service_url = "https://socialdl-python.onrender.com:10000/yt";
+$python_service_url = "https://socialdl-python.onrender.com/yt";
 
 $payload = json_encode(["url" => $url]);
 
