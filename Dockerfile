@@ -18,17 +18,16 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # -----------------------------------------------------
-# Install yt-dlp (FIXED for Bookworm)
+# Install yt-dlp for Python
 # -----------------------------------------------------
-RUN pip3 install --no-cache-dir --break-system-packages yt-dlp
+RUN pip3 install --no-cache-dir yt-dlp
 
 # -----------------------------------------------------
-# Copy application files
+# Set working directory and copy files
 # -----------------------------------------------------
 WORKDIR /var/www/html
-
-COPY extract.py /var/www/html/extract.py
 COPY index.php /var/www/html/index.php
+COPY extract.py /var/www/html/extract.py
 
 # -----------------------------------------------------
 # Permissions
@@ -37,16 +36,20 @@ RUN chmod +x /var/www/html/extract.py \
     && chown -R www-data:www-data /var/www/html
 
 # -----------------------------------------------------
-# Enable shell_exec
+# Enable shell_exec (if still needed)
 # -----------------------------------------------------
 RUN echo "disable_functions =" > /usr/local/etc/php/conf.d/exec.ini
 
 # -----------------------------------------------------
-# Health check
+# Expose Apache port
 # -----------------------------------------------------
-RUN python3 --version \
-    && pip3 --version \
-    && yt-dlp --version \
-    && php -v
-
 EXPOSE 80
+
+# -----------------------------------------------------
+# Start both Apache and Python service
+# -----------------------------------------------------
+# Use a simple shell to launch both services
+CMD [ "bash", "-c", "\
+    python3 /var/www/html/extract.py & \
+    apache2-foreground \
+"]
