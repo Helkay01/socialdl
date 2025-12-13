@@ -1,8 +1,8 @@
 <?php
 
-if(isset($_POST['btn'])) {
+
     
-$url = $_POST['url'] ?? null;
+$url = "https://m.youtube.com/watch?v=h3r4aUYo6cA" ?? null;
 if (!$url) {
     http_response_code(400);
     exit("URL required");
@@ -29,10 +29,10 @@ if ($response === false) {
 
 curl_close($ch);
 
-// header("Content-Type: application/json");
+ header("Content-Type: application/json");
 echo $response;
 
-}
+
 
 ?>
 
