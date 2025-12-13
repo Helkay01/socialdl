@@ -1,23 +1,23 @@
 <?php
 
-
-    
-$url = "https://m.youtube.com/watch?v=h3r4aUYo6cA" ?? null;
+$url = $_POST['url'] ?? null;
 if (!$url) {
     http_response_code(400);
     exit("URL required");
 }
 
+// Replace with your Python service URL on Render
+$python_service_url = "http://python-service.onrender.com:10000/yt";
+
 $payload = json_encode(["url" => $url]);
 
-$ch = curl_init("https://socialdl-u0bq.onrender.com/yt");
-
+$ch = curl_init($python_service_url);
 curl_setopt_array($ch, [
     CURLOPT_POST => true,
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => ["Content-Type: application/json"],
     CURLOPT_POSTFIELDS => $payload,
-    CURLOPT_TIMEOUT => 20
+    CURLOPT_TIMEOUT => 30
 ]);
 
 $response = curl_exec($ch);
@@ -29,25 +29,5 @@ if ($response === false) {
 
 curl_close($ch);
 
- header("Content-Type: application/json");
+header("Content-Type: application/json");
 echo $response;
-
-
-
-?>
-
-<!DOCTYPE html>
-<html>
-<head>
-    
-</head>  
-
-<body>
-    
-<form method="POST">
-    <input type="text" name="url" placeholder="Enter video URL" />
-    <button name="btn" type="submit">Get Video Info</button>
-</form>
-
-</body>
-</html>
