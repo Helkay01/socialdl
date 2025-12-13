@@ -1,7 +1,7 @@
 FROM php:8.2-apache
 
 # -----------------------------------------------------
-# Enable required Apache modules
+# Enable Apache modules
 # -----------------------------------------------------
 RUN a2enmod rewrite headers
 
@@ -14,14 +14,13 @@ RUN apt-get update && apt-get install -y \
     ffmpeg \
     ca-certificates \
     curl \
-    unzip \
     git \
     && rm -rf /var/lib/apt/lists/*
 
 # -----------------------------------------------------
-# Install yt-dlp (Python)
+# Install yt-dlp (FIXED for Bookworm)
 # -----------------------------------------------------
-RUN pip3 install --no-cache-dir yt-dlp
+RUN pip3 install --no-cache-dir --break-system-packages yt-dlp
 
 # -----------------------------------------------------
 # Copy application files
@@ -32,18 +31,18 @@ COPY extract.py /var/www/html/extract.py
 COPY index.php /var/www/html/index.php
 
 # -----------------------------------------------------
-# Permissions (IMPORTANT)
+# Permissions
 # -----------------------------------------------------
 RUN chmod +x /var/www/html/extract.py \
     && chown -R www-data:www-data /var/www/html
 
 # -----------------------------------------------------
-# PHP configuration (enable shell execution)
+# Enable shell_exec
 # -----------------------------------------------------
 RUN echo "disable_functions =" > /usr/local/etc/php/conf.d/exec.ini
 
 # -----------------------------------------------------
-# Health / version check
+# Health check
 # -----------------------------------------------------
 RUN python3 --version \
     && pip3 --version \
