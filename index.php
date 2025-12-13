@@ -14,6 +14,7 @@ $collection = $yt->download(
     Options::create()
         ->url('https://www.youtube.com/watch?v=oDAw7vW7H0c')
         ->skipDownload(true)
+        ->downloadPath(sys_get_temp_dir())
 );
 
 foreach ($collection->getVideos() as $video) {
