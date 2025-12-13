@@ -8,25 +8,21 @@ use YoutubeDl\Options;
 use YoutubeDl\YoutubeDl;
 
 $yt = new YoutubeDl();
-
-// The YouTube URL to fetch info for
 $videoUrl = 'https://www.youtube.com/watch?v=oDAw7vW7H0c';
 
 try {
-    // Create options
     $options = Options::create()
-        ->skipDownload(true)                  // Don't download video
-        ->setOption('cookies-from-browser', 'chrome'); // Use browser cookies
+        ->skipDownload(true)               // Correct method for skipping download
+        ->cookiesFromBrowser('chrome');    // Correct method for using browser cookies
 
-    // Fetch video info
     $collection = $yt->getDownloadInfo($videoUrl, $options);
 
     foreach ($collection->getVideos() as $video) {
-        if ($video->getError() !== null) {
+        if ($video->getError()) {
             echo "Error retrieving video info: {$video->getError()}\n";
         } else {
             echo "Title: " . $video->getTitle() . "\n";
-            echo "Link: " . $video->getUrl() . "\n";
+            echo "URL: " . $video->getUrl() . "\n";
             echo "Thumbnail: " . $video->getThumbnail() . "\n";
         }
     }
