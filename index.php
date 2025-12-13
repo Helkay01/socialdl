@@ -12,8 +12,7 @@ $videoUrl = 'https://www.youtube.com/watch?v=oDAw7vW7H0c';
 
 try {
     $options = Options::create()
-        ->skipDownload(true)               // Correct method for skipping download
-        ->cookiesFromBrowser('chrome');    // Correct method for using browser cookies
+        ->skipDownload(true); // Skip downloading the video
 
     $collection = $yt->getDownloadInfo($videoUrl, $options);
 
