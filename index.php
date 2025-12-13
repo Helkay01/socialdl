@@ -9,17 +9,20 @@ use YoutubeDl\YoutubeDl;
 
 $yt = new YoutubeDl();
 
+// Set options to skip actual download
 $collection = $yt->download(
     Options::create()
-       /// ->downloadPath('/path/to/downloads')
         ->url('https://www.youtube.com/watch?v=oDAw7vW7H0c')
+        ->skipDownload(true)
 );
 
 foreach ($collection->getVideos() as $video) {
     if ($video->getError() !== null) {
-        echo "Error downloading video: {$video->getError()}.";
+        echo "Error retrieving video info: {$video->getError()}.\n";
     } else {
-        echo $video->getTitle(); // Will return Phonebloks
-        // $video->getFile(); // \SplFileInfo instance of downloaded file
+        echo "Title: " . $video->getTitle() . "\n";
+        echo "Link: " . $video->getUrl() . "\n";
+        echo "Thumbnail: " . $video->getThumbnail() . "\n";
+        echo "-----------------------------\n";
     }
 }
